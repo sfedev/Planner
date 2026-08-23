@@ -1,5 +1,4 @@
 import { CATEGORIES } from '../data/plans'
-import { MODE } from '../lib/store'
 
 function Seccion({ titulo, intro, children }) {
   return (
@@ -186,9 +185,8 @@ export default function HowItWorks({ onGoToWheel }) {
             caduca a la hora.
           </Fila>
           <Fila icono="🔄" termino="Sincronizado">
-            {MODE === 'nube'
-              ? 'Lo que uno guarda aparece en el móvil del otro. Los datos viven en Supabase, no en el navegador.'
-              : 'Ahora mismo la app está en modo local: todo se guarda solo en este navegador y no se comparte entre dispositivos.'}
+            Lo que guarda uno aparece en el móvil del otro. Todo vive en Supabase, así que
+            da igual desde qué dispositivo entréis.
           </Fila>
         </ul>
       </Seccion>

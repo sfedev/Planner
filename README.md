@@ -12,7 +12,7 @@ después subís las fotos al álbum de recuerdos.
 
 ---
 
-## 1. Arrancar en 30 segundos (modo local, sin configurar nada)
+## 1. Arrancar en local
 
 ```bash
 npm install
@@ -22,13 +22,9 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:5173>. Sin credenciales de Supabase la app funciona igualmente en
-**modo local**: los planes se guardan en `localStorage` y las fotos en IndexedDB, en ese
-navegador. Perfecto para probarla. Cuando configures Supabase (paso 2) los datos pasan a la
-nube y se sincronizan entre tus dispositivos y los de tu pareja.
-
-> El modo activo se ve en la esquina superior derecha: si pone `modo local`, Supabase no está
-> configurado.
+Abre <http://localhost:5173>. **Hace falta Supabase configurado** (paso 2): sin credenciales
+la app no arranca, muestra una pantalla explicando qué variables faltan. No hay modo sin
+conexión a propósito, para que nadie use la app creyendo que guarda cuando no lo hace.
 
 ---
 
@@ -161,8 +157,15 @@ Cualquier hosting estático sirve. Con Vercel o Netlify:
 npm run build
 ```
 
-Sube la carpeta `dist/` (o conecta el repositorio) y añade las dos variables de entorno
-`VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en el panel del hosting.
+Si conectas el repositorio, **añade las dos variables de entorno**
+`VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en el panel del hosting y **vuelve a
+desplegar**: Vite las incrusta al compilar, así que un despliegue anterior no las recoge.
+Si en su lugar subes la carpeta `dist/` compilada en tu ordenador, ya van dentro y no hay
+que configurar nada.
+
+Después, en Supabase → *Authentication → URL Configuration*, pon la URL publicada como
+**Site URL** y añádela a **Redirect URLs**, o los enlaces mágicos seguirán apuntando a
+localhost.
 
 > La *anon key* es pública por diseño: quien la tenga no puede hacer nada porque las
 > políticas RLS solo dejan pasar a los dos emails autorizados.
@@ -180,11 +183,11 @@ Sube la carpeta `dist/` (o conecta el repositorio) y añade las dos variables de
     ├── App.jsx                 Navegación, sesión y orquestación de datos
     ├── data/plans.js           Catálogo de 36 planes + categorías
     ├── lib/
-    │   ├── supabase.js         Cliente (y detección de modo local)
-    │   ├── store.js            Capa de datos única para nube y local
+    │   ├── supabase.js         Cliente de Supabase
+    │   ├── store.js            Capa de datos (Supabase)
     │   ├── images.js           Compresión de fotos antes de subir
     │   ├── useMediaQuery.js    Detecta móvil para elegir ruleta o tragaperras
-    │   └── idb.js              IndexedDB para las fotos en modo local
+    │   └── errors.js           Traduce los errores de Supabase
     └── components/
         ├── Wheel.jsx           Ruleta SVG con animación y aguja (escritorio)
         ├── SlotMachine.jsx     Tragaperras vertical (móvil)
@@ -195,6 +198,7 @@ Sube la carpeta `dist/` (o conecta el repositorio) y añade las dos variables de
         ├── MemoryForm.jsx      Formulario de recuerdo + subida de fotos
         ├── Gallery.jsx         Muro polaroid / feed cronológico + lightbox
         ├── HowItWorks.jsx      Pantalla «¿Cómo funciona?»
+        ├── ConfigMissing.jsx   Aviso si faltan las credenciales
         └── Auth.jsx            Login (contraseña o enlace mágico)
 ```
 

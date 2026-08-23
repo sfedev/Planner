@@ -4,10 +4,10 @@ import SavedPlans from './components/SavedPlans'
 import Gallery from './components/Gallery'
 import Auth from './components/Auth'
 import HowItWorks from './components/HowItWorks'
+import ConfigMissing from './components/ConfigMissing'
 import { supabase, isSupabaseEnabled } from './lib/supabase'
 import { mensajeDeError } from './lib/errors'
 import {
-  MODE,
   listPlans,
   listMemories,
   acceptPlan,
@@ -34,7 +34,7 @@ function Toast({ toast }) {
 }
 
 export default function App() {
-  const [session, setSession] = useState(isSupabaseEnabled ? undefined : null)
+  const [session, setSession] = useState(undefined)
   const [tab, setTab] = useState('ruleta')
   const [plans, setPlans] = useState([])
   const [memories, setMemories] = useState([])
@@ -71,11 +71,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (isSupabaseEnabled && !session) {
+    if (!isSupabaseEnabled) return
+    if (!session) {
       setCargando(false)
       return
     }
-    if (session !== undefined) cargar()
+    cargar()
   }, [session, cargar])
 
   // --- acciones ------------------------------------------------------------
@@ -120,6 +121,10 @@ export default function App() {
   }
 
   // --- render --------------------------------------------------------------
+  // Sin credenciales no se arranca: antes caía en "modo local" y era fácil
+  // creer que estaba guardando cuando no lo hacía.
+  if (!isSupabaseEnabled) return <ConfigMissing />
+
   if (session === undefined) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center">
@@ -128,7 +133,7 @@ export default function App() {
     )
   }
 
-  if (isSupabaseEnabled && !session) return <Auth />
+  if (!session) return <Auth />
 
   const pendientes = plans.filter((p) => p.status === 'pendiente').length
 
@@ -183,21 +188,12 @@ export default function App() {
               ?
             </button>
 
-            {MODE === 'local' ? (
-              <span
-                className="chip bg-mostaza/15 text-[10px] text-mostaza"
-                title="Sin Supabase configurado: los datos se guardan solo en este navegador"
-              >
-                modo local
-              </span>
-            ) : (
-              <button
-                onClick={() => supabase.auth.signOut()}
-                className="text-xs text-muted underline underline-offset-4 hover:text-ink"
-              >
-                Salir
-              </button>
-            )}
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="text-xs text-muted underline underline-offset-4 hover:text-ink"
+            >
+              Salir
+            </button>
           </div>
         </div>
       </header>
