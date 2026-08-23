@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    background-image: radial-gradient(
+        circle at 12% 8%,
+        rgba(201, 123, 90, 0.07) 0%,
+        transparent 42%
+      ),
+      radial-gradient(circle at 88% 92%, rgba(126, 155, 122, 0.09) 0%, transparent 45%);
+    background-attachment: fixed;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+  ::selection {
+    @apply bg-terracota/25;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-ink/5 bg-white/80 shadow-soft backdrop-blur-sm;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm
+           font-medium transition-all duration-200 active:scale-[.97]
+           disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-cream hover:bg-ink/85;
+  }
+  .btn-accent {
+    @apply btn bg-terracota text-white hover:bg-terracota/90;
+  }
+  .btn-ghost {
+    @apply btn border border-ink/10 bg-white/70 text-ink hover:bg-white;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+  }
+  .field {
+    @apply w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-sm
+           outline-none transition focus:border-terracota/50 focus:ring-4 focus:ring-terracota/10;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted;
+  }
+}
+
+/* Textura de papel muy sutil para las polaroids */
+.paper {
+  background-color: #fffdfa;
+  background-image: linear-gradient(
+    135deg,
+    rgba(46, 42, 39, 0.015) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(46, 42, 39, 0.015) 50%,
+    rgba(46, 42, 39, 0.015) 75%,
+    transparent 75%
+  );
+  background-size: 6px 6px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
