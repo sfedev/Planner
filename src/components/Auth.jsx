@@ -2,38 +2,25 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Auth() {
-  const [modo, setModo] = useState('password') // 'password' | 'magico'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [mensaje, setMensaje] = useState(null)
   const [error, setError] = useState(null)
 
   async function entrar(e) {
     e.preventDefault()
     setCargando(true)
     setError(null)
-    setMensaje(null)
 
     try {
-      if (modo === 'password') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-      } else {
-        const { error } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            emailRedirectTo: window.location.origin,
-            // Nunca crear cuentas desde la app: las crea el panel de Supabase.
-            shouldCreateUser: false,
-          },
-        })
-        if (error) throw error
-        setMensaje('Te hemos enviado un enlace de acceso al correo. Ábrelo desde este dispositivo.')
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
     } catch (err) {
-      setError(err.message ?? 'No se ha podido iniciar sesión.')
-    } finally {
+      setError(
+        /Invalid login credentials/i.test(err.message ?? '')
+          ? 'Correo o contraseña incorrectos.'
+          : err.message ?? 'No se ha podido iniciar sesión.'
+      )
       setCargando(false)
     }
   }
@@ -62,53 +49,28 @@ export default function Auth() {
           />
         </div>
 
-        {modo === 'password' && (
-          <div>
-            <label className="label" htmlFor="password">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="field"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <div>
+          <label className="label" htmlFor="password">
+            Contraseña
+          </label>
+          <input
+            id="password"
+            type="password"
+            className="field"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
         {error && (
           <p className="rounded-xl bg-terracota/10 px-4 py-3 text-sm text-terracota">{error}</p>
         )}
-        {mensaje && (
-          <p className="rounded-xl bg-salvia/15 px-4 py-3 text-sm text-salvia">{mensaje}</p>
-        )}
 
         <button type="submit" className="btn-accent w-full" disabled={cargando}>
-          {cargando ? 'Entrando…' : modo === 'password' ? 'Entrar' : 'Enviarme el enlace'}
+          {cargando ? 'Entrando…' : 'Entrar'}
         </button>
-
-        <button
-          type="button"
-          className="w-full text-xs text-muted underline underline-offset-4 hover:text-ink"
-          onClick={() => {
-            setModo((m) => (m === 'password' ? 'magico' : 'password'))
-            setError(null)
-            setMensaje(null)
-          }}
-        >
-          {modo === 'password'
-            ? 'Prefiero recibir un enlace por correo'
-            : 'Prefiero usar mi contraseña'}
-        </button>
-
-        <p className="text-center text-[11px] leading-relaxed text-muted">
-          Las cuentas se crean desde el panel de Supabase
-          <br />
-          (Authentication → Users → Add user).
-        </p>
       </form>
     </div>
   )

@@ -198,7 +198,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10 xl:max-w-6xl">
         {error && (
           <div className="card mb-6 border-terracota/20 bg-terracota/5 p-4 text-sm text-terracota">
             {error}

@@ -15,7 +15,7 @@ export default function Filters({ value, onChange, counts }) {
   ]
 
   return (
-    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
+    <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0 lg:justify-start">
       {opciones.map((op) => {
         const activo = value === op.id
         return (

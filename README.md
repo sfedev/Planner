@@ -72,6 +72,8 @@ Eso crea:
 
 ### 2.3 Crear vuestros dos usuarios
 
+La app no permite registrarse: los dos usuarios se crean a mano una sola vez.
+
 *Authentication → Users → Add user → Create new user*, marcando **Auto Confirm User**, para
 cada uno. Usa exactamente los correos que insertaste en `pareja_autorizada`.
 
@@ -163,9 +165,8 @@ desplegar**: Vite las incrusta al compilar, así que un despliegue anterior no l
 Si en su lugar subes la carpeta `dist/` compilada en tu ordenador, ya van dentro y no hay
 que configurar nada.
 
-Después, en Supabase → *Authentication → URL Configuration*, pon la URL publicada como
-**Site URL** y añádela a **Redirect URLs**, o los enlaces mágicos seguirán apuntando a
-localhost.
+El inicio de sesión es solo con correo y contraseña, así que no hace falta tocar nada más
+en Supabase después de publicar.
 
 > La *anon key* es pública por diseño: quien la tenga no puede hacer nada porque las
 > políticas RLS solo dejan pasar a los dos emails autorizados.
@@ -199,7 +200,7 @@ localhost.
         ├── Gallery.jsx         Muro polaroid / feed cronológico + lightbox
         ├── HowItWorks.jsx      Pantalla «¿Cómo funciona?»
         ├── ConfigMissing.jsx   Aviso si faltan las credenciales
-        └── Auth.jsx            Login (contraseña o enlace mágico)
+        └── Auth.jsx            Login con correo y contraseña
 ```
 
 ---

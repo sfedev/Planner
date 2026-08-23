@@ -80,7 +80,7 @@ const Wheel = forwardRef(function Wheel({ items, onResult, disabled }, ref) {
   }
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[min(86vw,34rem)] select-none">
+    <div className="relative mx-auto aspect-square w-full max-w-[min(86vw,34rem)] select-none lg:max-w-[min(34rem,64vh)]">
       {/* Aguja */}
       <div className="pointer-events-none absolute left-1/2 top-[-6px] z-20 -translate-x-1/2">
         <div

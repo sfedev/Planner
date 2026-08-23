@@ -96,37 +96,44 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-3 text-center">
-        <h1 className="text-3xl font-semibold sm:text-4xl">¿Qué hacemos este finde?</h1>
-        <p className="mx-auto max-w-md text-sm leading-relaxed text-muted">
-          Elegid el tipo de plan, dadle {esMovil ? 'a tirar' : 'a girar'} y que decida la suerte.
-          Sin discutir.
-        </p>
-      </header>
-
-      <Filters value={filtro} onChange={setFiltro} counts={counts} />
-
-      {pool.length === 0 ? (
-        <div className="card mx-auto max-w-md p-8 text-center">
-          <p className="mb-2 text-3xl">🎉</p>
-          <p className="text-sm leading-relaxed text-muted">
-            No quedan planes de esta categoría sin asignar: ya los tenéis todos pendientes.
-            Completad alguno o probad con otro filtro.
+    <>
+      {/* En ordenador: texto y filtros a la izquierda, ruleta a la derecha,
+          para que todo quepa sin tener que bajar. En móvil y tablet sigue
+          siendo una sola columna apilada. */}
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 lg:space-y-0 xl:gap-14">
+        <header className="space-y-3 text-center lg:col-start-1 lg:row-start-1 lg:text-left">
+          <h1 className="text-3xl font-semibold sm:text-4xl">¿Qué hacemos este finde?</h1>
+          <p className="mx-auto max-w-md text-sm leading-relaxed text-muted lg:mx-0">
+            Elegid el tipo de plan, dadle {esMovil ? 'a tirar' : 'a girar'} y que decida la
+            suerte. Sin discutir.
           </p>
-          <button className="btn-ghost mt-4" onClick={onGoToPlans}>
-            Ver planes guardados
-          </button>
+        </header>
+
+        <div className="lg:col-start-1 lg:row-start-2">
+          <Filters value={filtro} onChange={setFiltro} counts={counts} />
         </div>
-      ) : (
-        <>
-          {esMovil ? (
+
+        <div className="lg:col-start-2 lg:row-start-1 lg:row-span-3">
+          {pool.length === 0 ? (
+            <div className="card mx-auto max-w-md p-8 text-center">
+              <p className="mb-2 text-3xl">🎉</p>
+              <p className="text-sm leading-relaxed text-muted">
+                No quedan planes de esta categoría sin asignar: ya los tenéis todos
+                pendientes. Completad alguno o probad con otro filtro.
+              </p>
+              <button className="btn-ghost mt-4" onClick={onGoToPlans}>
+                Ver planes guardados
+              </button>
+            </div>
+          ) : esMovil ? (
             <SlotMachine ref={ruedaRef} items={candidatos} onResult={setResultado} />
           ) : (
             <Wheel ref={ruedaRef} items={candidatos} onResult={setResultado} />
           )}
+        </div>
 
-          <div className="flex flex-col items-center gap-2">
+        {pool.length > 0 && (
+          <div className="flex flex-col items-center gap-2 lg:col-start-1 lg:row-start-3 lg:items-start">
             <button
               className="btn-ghost text-xs"
               onClick={() => setSemilla((s) => s + 1)}
@@ -134,7 +141,7 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
             >
               🔀 Barajar los planes
             </button>
-            <p className="max-w-xs text-center text-xs leading-relaxed text-muted">
+            <p className="max-w-xs text-center text-xs leading-relaxed text-muted lg:text-left">
               {frescos.length > 0
                 ? `${candidatos.length - repetidosEnRuleta} de ${frescos.length} planes sin estrenar`
                 : 'Ya los habéis hecho todos: ahora toca repetir los que más os gustaron'}
@@ -145,8 +152,8 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
                 }`}
             </p>
           </div>
-        </>
-      )}
+        )}
+      </div>
 
       <PlanModal
         plan={resultado}
@@ -156,6 +163,6 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
         onRetry={volverATirar}
         onClose={() => setResultado(null)}
       />
-    </div>
+    </>
   )
 }
