@@ -10,6 +10,9 @@ import { mensajeDeError } from './lib/errors'
 import {
   listPlans,
   listMemories,
+  listIdeas,
+  addIdea,
+  deleteIdea,
   acceptPlan,
   completePlan,
   deletePlan,
@@ -38,6 +41,7 @@ export default function App() {
   const [tab, setTab] = useState('ruleta')
   const [plans, setPlans] = useState([])
   const [memories, setMemories] = useState([])
+  const [ideas, setIdeas] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
@@ -59,9 +63,10 @@ export default function App() {
   const cargar = useCallback(async () => {
     setCargando(true)
     try {
-      const [p, m] = await Promise.all([listPlans(), listMemories()])
+      const [p, m, i] = await Promise.all([listPlans(), listMemories(), listIdeas()])
       setPlans(p)
       setMemories(m)
+      setIdeas(i)
       setError(null)
     } catch (err) {
       setError(mensajeDeError(err))
@@ -106,6 +111,22 @@ export default function App() {
     } catch (err) {
       setError(mensajeDeError(err))
       avisar('No se ha podido eliminar el plan.')
+    }
+  }
+
+  async function handleAddIdea(datos) {
+    const nueva = await addIdea(datos)
+    setIdeas((prev) => [nueva, ...prev])
+    avisar(`«${nueva.title}» ya está en la ruleta`)
+  }
+
+  async function handleDeleteIdea(idea) {
+    try {
+      await deleteIdea(idea.filaId)
+      setIdeas((prev) => prev.filter((i) => i.id !== idea.id))
+      avisar('Plan eliminado del catálogo.')
+    } catch (err) {
+      setError(mensajeDeError(err))
     }
   }
 
@@ -215,7 +236,10 @@ export default function App() {
             {tab === 'ruleta' && (
               <RouletteView
                 plans={plans}
+                ideas={ideas}
                 onAccept={handleAccept}
+                onAddIdea={handleAddIdea}
+                onDeleteIdea={handleDeleteIdea}
                 onGoToPlans={() => setTab('planes')}
               />
             )}

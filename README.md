@@ -63,6 +63,7 @@ Eso crea:
 | Objeto | Qué es |
 | --- | --- |
 | `pareja_autorizada` | Los correos con acceso. Con RLS activo y sin políticas: ningún cliente puede leerla. |
+| `ideas` | Los planes que añadís desde la app, además del catálogo del código. |
 | `plans` | Los planes que habéis aceptado en la ruleta (pendientes y completados). |
 | `memories` | El recuerdo de cada plan: fecha, nota y rutas de las fotos. |
 | `v_album` | Vista de solo lectura que junta plan + recuerdo, por si quieres consultarla. |
@@ -129,8 +130,11 @@ Detalles pensados para el día a día:
 
 ## 4. Añadir vuestros propios planes
 
-Todo el catálogo está en [`src/data/plans.js`](src/data/plans.js). Copia cualquier objeto y
-cámbialo:
+Lo normal es hacerlo **desde la propia web**: botón **＋ Añadir plan** debajo de la ruleta.
+Se guardan en la tabla `ideas`, los veis los dos y se pueden borrar desde la misma ventana.
+
+Para ampliar el catálogo base (el que viene con el código) edita
+[`src/data/plans.js`](src/data/plans.js). Copia cualquier objeto y cámbialo:
 
 ```js
 {
@@ -147,7 +151,8 @@ cámbialo:
 }
 ```
 
-No hay que tocar nada más: la ruleta, los filtros y los contadores se actualizan solos.
+No hay que tocar nada más: la ruleta, los filtros y los contadores se actualizan solos. Si
+la etiqueta corta se pasa de largo, la ruleta la encoge sola para que no invada el centro.
 
 ---
 
@@ -197,6 +202,7 @@ en Supabase después de publicar.
         ├── PlanModal.jsx       Tarjeta del plan que ha tocado
         ├── SavedPlans.jsx      Planes pendientes y completados
         ├── MemoryForm.jsx      Formulario de recuerdo + subida de fotos
+        ├── AddPlanForm.jsx     Añadir y borrar planes propios
         ├── Gallery.jsx         Muro polaroid / feed cronológico + lightbox
         ├── HowItWorks.jsx      Pantalla «¿Cómo funciona?»
         ├── ConfigMissing.jsx   Aviso si faltan las credenciales

@@ -4,6 +4,7 @@ import SlotMachine from './SlotMachine'
 import Filters from './Filters'
 import { useEsMovil } from '../lib/useMediaQuery'
 import PlanModal from './PlanModal'
+import AddPlanForm from './AddPlanForm'
 import { PLANS, CATEGORIES } from '../data/plans'
 
 const MAX_QUESITOS = 10
@@ -17,11 +18,19 @@ function barajar(array) {
   return copia
 }
 
-export default function RouletteView({ plans, onAccept, onGoToPlans }) {
+export default function RouletteView({
+  plans,
+  ideas,
+  onAccept,
+  onAddIdea,
+  onDeleteIdea,
+  onGoToPlans,
+}) {
   const [filtro, setFiltro] = useState('todos')
   const [semilla, setSemilla] = useState(0)
   const [resultado, setResultado] = useState(null)
   const [guardando, setGuardando] = useState(false)
+  const [anadiendo, setAnadiendo] = useState(false)
   const ruedaRef = useRef(null)
   // En móvil la ruleta se convierte en tragaperras vertical
   const esMovil = useEsMovil()
@@ -44,9 +53,12 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
     return mapa
   }, [plans])
 
+  // El catálogo del código más los planes que habéis añadido vosotros.
+  const catalogo = useMemo(() => [...PLANS, ...ideas], [ideas])
+
   const disponibles = useMemo(
-    () => PLANS.filter((p) => !pendientes.has(p.id)),
-    [pendientes]
+    () => catalogo.filter((p) => !pendientes.has(p.id)),
+    [catalogo, pendientes]
   )
 
   const counts = useMemo(() => {
@@ -134,13 +146,22 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
 
         {pool.length > 0 && (
           <div className="flex flex-col items-center gap-2 lg:col-start-1 lg:row-start-3 lg:items-start">
-            <button
-              className="btn-ghost text-xs"
-              onClick={() => setSemilla((s) => s + 1)}
-              title="Cambia los planes que entran en el sorteo"
-            >
-              🔀 Barajar los planes
-            </button>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              <button
+                className="btn-ghost text-xs"
+                onClick={() => setSemilla((s) => s + 1)}
+                title="Cambia los planes que entran en el sorteo"
+              >
+                🔀 Barajar los planes
+              </button>
+              <button
+                className="btn-ghost text-xs"
+                onClick={() => setAnadiendo(true)}
+                title="Añadir un plan vuestro al catálogo"
+              >
+                ＋ Añadir plan
+              </button>
+            </div>
             <p className="max-w-xs text-center text-xs leading-relaxed text-muted lg:text-left">
               {frescos.length > 0
                 ? `${candidatos.length - repetidosEnRuleta} de ${frescos.length} planes sin estrenar`
@@ -154,6 +175,15 @@ export default function RouletteView({ plans, onAccept, onGoToPlans }) {
           </div>
         )}
       </div>
+
+      {anadiendo && (
+        <AddPlanForm
+          ideas={ideas}
+          onClose={() => setAnadiendo(false)}
+          onSubmit={onAddIdea}
+          onDelete={onDeleteIdea}
+        />
+      )}
 
       <PlanModal
         plan={resultado}

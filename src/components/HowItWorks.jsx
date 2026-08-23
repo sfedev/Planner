@@ -193,22 +193,25 @@ export default function HowItWorks({ onGoToWheel }) {
 
       <Seccion
         titulo="Añadir vuestros propios planes"
-        intro="El catálogo no está cerrado: es un fichero de texto que podéis ampliar."
+        intro="El catálogo no está cerrado: lo que se os ocurra entra en la ruleta."
       >
-        <div className="card space-y-3 p-4 text-sm leading-relaxed text-ink/75">
-          <p>
-            Los planes viven en <code className="rounded bg-sand px-1.5 py-0.5 text-xs">
-              src/data/plans.js
-            </code>
-            . Cada uno es un bloque con título, categoría, presupuesto, consejos y su apartado
-            sin gluten. Copiáis uno, lo cambiáis y ya está: la ruleta, los filtros y los
-            contadores se actualizan solos.
-          </p>
-          <p>
-            La única regla es que la etiqueta corta que aparece en la ruleta no pase de trece
-            caracteres, o se saldrá del quesito.
-          </p>
-        </div>
+        <ul className="card divide-y divide-ink/5 px-4">
+          <Fila icono="＋" termino="Botón «Añadir plan»">
+            Debajo de la ruleta. Escribís el plan, elegís una de las tres categorías, un icono
+            y si es de los baratos o de los moderados.
+          </Fila>
+          <Fila icono="🎯" termino="Sale donde le toca">
+            El plan aparece en el filtro de su categoría y también al girar con
+            «Cualquiera», mezclado con los que ya venían.
+          </Fila>
+          <Fila icono="👀" termino="Los dos lo veis">
+            Se guarda en la misma base de datos, así que lo que añade uno le sale al otro.
+          </Fila>
+          <Fila icono="🗑" termino="Se pueden quitar">
+            En la misma ventana de «Añadir plan» está la lista de los vuestros, con su papelera.
+            Borrar uno no borra los recuerdos que ya tengáis de él.
+          </Fila>
+        </ul>
       </Seccion>
 
       <div className="pt-2 text-center">

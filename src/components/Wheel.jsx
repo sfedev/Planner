@@ -1,9 +1,23 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { CATEGORIES } from '../data/plans'
 
 const R = 92
 const SPIN_MS = 5200
 const VUELTAS = 6
+
+// Banda radial en la que puede escribirse la etiqueta: desde el borde del
+// centro (30) hasta donde empieza el emoji (72). Lo que no quepa se encoge.
+const ETIQUETA_DENTRO = 30
+const ETIQUETA_FUERA = R - 20
+const ETIQUETA_ANCHO = ETIQUETA_FUERA - ETIQUETA_DENTRO
+const FUENTE_MINIMA = 4.6
 
 const polar = (radius, deg) => {
   const rad = ((deg - 90) * Math.PI) / 180
@@ -35,11 +49,26 @@ const Wheel = forwardRef(function Wheel({ items, onResult, disabled }, ref) {
   const [spinning, setSpinning] = useState(false)
   const winnerRef = useRef(null)
   const timerRef = useRef(null)
+  const etiquetasRef = useRef([])
 
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
   // Permite que el padre relance la ruleta (botón "Volver a tirar")
   useImperativeHandle(ref, () => ({ spin: () => spin() }))
+
+  // Ninguna etiqueta puede invadir el centro: medimos la que se pase y le
+  // bajamos el cuerpo de letra justo lo necesario para que quepa.
+  useLayoutEffect(() => {
+    etiquetasRef.current.forEach((el) => {
+      if (!el) return
+      el.style.fontSize = ''
+      const base = parseFloat(el.getAttribute('font-size'))
+      const ancho = el.getComputedTextLength()
+      if (ancho > ETIQUETA_ANCHO) {
+        el.style.fontSize = `${Math.max((base * ETIQUETA_ANCHO) / ancho, FUENTE_MINIMA)}px`
+      }
+    })
+  }, [items])
 
   // Si cambian los items mientras no gira, reseteamos la posición.
   useEffect(() => {
@@ -129,14 +158,19 @@ const Wheel = forwardRef(function Wheel({ items, onResult, disabled }, ref) {
           const step = 360 / total
           const mid = total === 1 ? 0 : i * step + step / 2
           const etiqueta =
-            item.short.length > 13 ? `${item.short.slice(0, 12)}…` : item.short
+            item.short.length > 18 ? `${item.short.slice(0, 17)}…` : item.short
+          // En la mitad izquierda hay que darle la vuelta al texto o se lee
+          // del revés. Al girarlo 180° las coordenadas cambian de signo.
+          const volteada = mid > 180
+          const signo = volteada ? -1 : 1
 
-          // Cada etiqueta va tumbada sobre su radio: así dispone de todo el
-          // radio del quesito y nunca invade el sector de al lado.
           return (
-            <g key={`t-${item.id}`} transform={`rotate(${mid - 90})`}>
+            <g
+              key={`t-${item.id}`}
+              transform={`rotate(${mid - 90})${volteada ? ' rotate(180)' : ''}`}
+            >
               <text
-                x={R - 9}
+                x={signo * (R - 9)}
                 y="0"
                 textAnchor="middle"
                 dominantBaseline="central"
@@ -145,9 +179,10 @@ const Wheel = forwardRef(function Wheel({ items, onResult, disabled }, ref) {
                 {item.emoji}
               </text>
               <text
-                x={R - 20}
+                ref={(el) => (etiquetasRef.current[i] = el)}
+                x={signo * ETIQUETA_FUERA}
                 y="0"
-                textAnchor="end"
+                textAnchor={volteada ? 'start' : 'end'}
                 dominantBaseline="central"
                 fontSize={total > 8 ? 7 : 7.8}
                 fontWeight="600"

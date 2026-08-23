@@ -67,6 +67,72 @@ export async function deletePlan(planId) {
 }
 
 // ===========================================================================
+//  IDEAS — planes añadidos por vosotros desde la app
+// ===========================================================================
+
+// Etiqueta corta para el quesito de la ruleta: cortamos por la última
+// palabra que quepa en 14 caracteres.
+export function etiquetaCorta(titulo = '') {
+  const limpio = titulo.trim()
+  if (limpio.length <= 14) return limpio
+  const corte = limpio.slice(0, 14)
+  const espacio = corte.lastIndexOf(' ')
+  return (espacio > 5 ? corte.slice(0, espacio) : corte).trim()
+}
+
+// Convierte una fila de `ideas` a la misma forma que los planes del catálogo,
+// para que la ruleta no tenga que distinguirlos.
+export function ideaDesdeFila(fila) {
+  return {
+    id: `custom:${fila.id}`,
+    short: fila.short,
+    title: fila.title,
+    category: fila.category,
+    emoji: fila.emoji,
+    budget: fila.budget,
+    driveTime: null,
+    description: fila.description || 'Plan añadido por vosotros.',
+    tips: [],
+    glutenFree: null,
+    propio: true,
+    filaId: fila.id,
+  }
+}
+
+export async function listIdeas() {
+  const { data, error } = await supabase
+    .from('ideas')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data.map(ideaDesdeFila)
+}
+
+export async function addIdea({ title, category, emoji, budget, description }) {
+  const { data: userData } = await supabase.auth.getUser()
+  const { data, error } = await supabase
+    .from('ideas')
+    .insert({
+      title: title.trim(),
+      short: etiquetaCorta(title),
+      category,
+      emoji,
+      budget,
+      description: description?.trim() || null,
+      created_by: userData?.user?.id ?? null,
+    })
+    .select()
+    .single()
+  if (error) throw error
+  return ideaDesdeFila(data)
+}
+
+export async function deleteIdea(filaId) {
+  const { error } = await supabase.from('ideas').delete().eq('id', filaId)
+  if (error) throw error
+}
+
+// ===========================================================================
 //  RECUERDOS (completar plan + fotos)
 // ===========================================================================
 

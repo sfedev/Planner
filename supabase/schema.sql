@@ -151,6 +151,36 @@ with (security_invoker = true) as
   order by m.happened_on desc;
 
 -- ---------------------------------------------------------------------
+-- 5 ter. Tabla IDEAS — los planes que añadís vosotros desde la app
+--        (se suman al catálogo de src/data/plans.js y salen en la ruleta)
+-- ---------------------------------------------------------------------
+create table if not exists public.ideas (
+  id          uuid primary key default gen_random_uuid(),
+  title       text        not null,
+  short       text        not null,                        -- etiqueta corta para la ruleta
+  category    text        not null check (category in ('casa', 'madrid', 'escapada')),
+  emoji       text        not null default '💡',
+  budget      text        not null default '€' check (budget in ('€', '€€')),
+  description text,
+  created_by  uuid        references auth.users (id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists ideas_category_idx on public.ideas (category, created_at desc);
+
+alter table public.ideas enable row level security;
+
+drop policy if exists "pareja lee ideas"   on public.ideas;
+drop policy if exists "pareja crea ideas"  on public.ideas;
+drop policy if exists "pareja edita ideas" on public.ideas;
+drop policy if exists "pareja borra ideas" on public.ideas;
+
+create policy "pareja lee ideas"   on public.ideas for select to authenticated using (public.es_pareja());
+create policy "pareja crea ideas"  on public.ideas for insert to authenticated with check (public.es_pareja());
+create policy "pareja edita ideas" on public.ideas for update to authenticated using (public.es_pareja()) with check (public.es_pareja());
+create policy "pareja borra ideas" on public.ideas for delete to authenticated using (public.es_pareja());
+
+-- ---------------------------------------------------------------------
 -- 6. Al borrar el último recuerdo de un plan, el plan vuelve a pendiente
 -- ---------------------------------------------------------------------
 create or replace function public.plan_vuelve_a_pendiente()
