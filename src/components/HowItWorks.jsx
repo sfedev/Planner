@@ -174,6 +174,29 @@ export default function HowItWorks({ onGoToWheel }) {
         </ul>
       </Seccion>
 
+      <Seccion
+        titulo="El historial"
+        intro="La pestaña 📜 lleva la cuenta de quién ha hecho qué."
+      >
+        <ul className="card divide-y divide-ink/5 px-4">
+          <Fila icono="🎡" termino="Quién eligió cada plan">
+            Cada vez que alguien acepta un plan queda anotado, con la fecha y si ya está hecho
+            o sigue pendiente.
+          </Fila>
+          <Fila icono="📷" termino="Quién subió las fotos">
+            Los recuerdos indican quién los guardó y cuántas fotos tienen. También aparece en
+            el álbum, debajo de cada uno.
+          </Fila>
+          <Fila icono="＋" termino="Quién añadió qué plan">
+            Los planes que os inventáis también entran en el historial.
+          </Fila>
+          <Fila icono="🏆" termino="Marcador">
+            Arriba del todo, cuántas cosas lleva cada uno. Sin ningún premio, pero sirve para
+            picarse.
+          </Fila>
+        </ul>
+      </Seccion>
+
       <Seccion titulo="Vuestra privacidad">
         <ul className="card divide-y divide-ink/5 px-4">
           <Fila icono="🔒" termino="Solo vosotros dos">

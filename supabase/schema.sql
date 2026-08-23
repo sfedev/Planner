@@ -39,6 +39,30 @@ comment on function public.es_pareja() is
   'True solo si el email del usuario autenticado está en pareja_autorizada.';
 
 -- ---------------------------------------------------------------------
+-- 0 bis. Tabla PERFILES — nombre visible de cada uno.
+--        Las tablas guardan quién hizo cada cosa en `created_by`, pero ahí
+--        solo hay un UUID: el cliente no puede leer auth.users. Esta tabla
+--        es la que traduce ese UUID a "Sergio" o "Alicia".
+--        Los nombres se insertan desde emails.local.sql (no versionado).
+-- ---------------------------------------------------------------------
+create table if not exists public.perfiles (
+  id     uuid primary key references auth.users (id) on delete cascade,
+  nombre text not null
+);
+
+alter table public.perfiles enable row level security;
+
+drop policy if exists "pareja lee perfiles"     on public.perfiles;
+drop policy if exists "cada uno edita el suyo"  on public.perfiles;
+
+create policy "pareja lee perfiles" on public.perfiles for select to authenticated
+  using (public.es_pareja());
+
+create policy "cada uno edita el suyo" on public.perfiles for update to authenticated
+  using (id = auth.uid() and public.es_pareja())
+  with check (id = auth.uid());
+
+-- ---------------------------------------------------------------------
 -- 1. Tabla PLANS — los planes que habéis aceptado en la ruleta
 -- ---------------------------------------------------------------------
 create table if not exists public.plans (

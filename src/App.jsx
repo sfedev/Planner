@@ -3,6 +3,7 @@ import RouletteView from './components/RouletteView'
 import SavedPlans from './components/SavedPlans'
 import Gallery from './components/Gallery'
 import Auth from './components/Auth'
+import History from './components/History'
 import HowItWorks from './components/HowItWorks'
 import ConfigMissing from './components/ConfigMissing'
 import { supabase, isSupabaseEnabled } from './lib/supabase'
@@ -11,6 +12,7 @@ import {
   listPlans,
   listMemories,
   listIdeas,
+  listProfiles,
   addIdea,
   deleteIdea,
   acceptPlan,
@@ -23,6 +25,7 @@ const TABS = [
   { id: 'ruleta', label: 'Ruleta', emoji: '🎡' },
   { id: 'planes', label: 'Planes', emoji: '📌' },
   { id: 'recuerdos', label: 'Recuerdos', emoji: '📷' },
+  { id: 'historial', label: 'Historial', emoji: '📜' },
 ]
 
 function Toast({ toast }) {
@@ -42,6 +45,7 @@ export default function App() {
   const [plans, setPlans] = useState([])
   const [memories, setMemories] = useState([])
   const [ideas, setIdeas] = useState([])
+  const [perfiles, setPerfiles] = useState({})
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
@@ -63,10 +67,16 @@ export default function App() {
   const cargar = useCallback(async () => {
     setCargando(true)
     try {
-      const [p, m, i] = await Promise.all([listPlans(), listMemories(), listIdeas()])
+      const [p, m, i, perf] = await Promise.all([
+        listPlans(),
+        listMemories(),
+        listIdeas(),
+        listProfiles(),
+      ])
       setPlans(p)
       setMemories(m)
       setIdeas(i)
+      setPerfiles(perf)
       setError(null)
     } catch (err) {
       setError(mensajeDeError(err))
@@ -246,6 +256,7 @@ export default function App() {
             {tab === 'planes' && (
               <SavedPlans
                 plans={plans}
+                perfiles={perfiles}
                 onCompletePlan={handleComplete}
                 onDeletePlan={handleDeletePlan}
                 onGoToWheel={() => setTab('ruleta')}
@@ -254,7 +265,17 @@ export default function App() {
             {tab === 'recuerdos' && (
               <Gallery
                 memories={memories}
+                perfiles={perfiles}
                 onDeleteMemory={handleDeleteMemory}
+                onGoToWheel={() => setTab('ruleta')}
+              />
+            )}
+            {tab === 'historial' && (
+              <History
+                plans={plans}
+                memories={memories}
+                ideas={ideas}
+                perfiles={perfiles}
                 onGoToWheel={() => setTab('ruleta')}
               />
             )}

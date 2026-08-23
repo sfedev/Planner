@@ -11,7 +11,7 @@ function formatearFecha(iso) {
   })
 }
 
-function PlanCard({ plan, onComplete, onDelete }) {
+function PlanCard({ plan, onComplete, onDelete, quien }) {
   const [abierto, setAbierto] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
   const cat = CATEGORIES[plan.category] ?? CATEGORIES.casa
@@ -39,6 +39,7 @@ function PlanCard({ plan, onComplete, onDelete }) {
               {completado ? '✅ Hecho el ' : 'Guardado el '}
               {formatearFecha(completado ? plan.completed_at : plan.accepted_at)}
             </span>
+            {quien && <span>· lo eligió {quien}</span>}
           </div>
         </div>
 
@@ -119,7 +120,13 @@ function PlanCard({ plan, onComplete, onDelete }) {
   )
 }
 
-export default function SavedPlans({ plans, onCompletePlan, onDeletePlan, onGoToWheel }) {
+export default function SavedPlans({
+  plans,
+  perfiles = {},
+  onCompletePlan,
+  onDeletePlan,
+  onGoToWheel,
+}) {
   const [planActivo, setPlanActivo] = useState(null)
   const [verCompletados, setVerCompletados] = useState(false)
 
@@ -156,6 +163,7 @@ export default function SavedPlans({ plans, onCompletePlan, onDeletePlan, onGoTo
             plan={plan}
             onComplete={setPlanActivo}
             onDelete={onDeletePlan}
+            quien={perfiles[plan.created_by]}
           />
         ))}
       </div>
@@ -176,6 +184,7 @@ export default function SavedPlans({ plans, onCompletePlan, onDeletePlan, onGoTo
                 plan={plan}
                 onComplete={setPlanActivo}
                 onDelete={onDeletePlan}
+                quien={perfiles[plan.created_by]}
               />
             ))}
         </div>

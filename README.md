@@ -62,6 +62,7 @@ Eso crea:
 
 | Objeto | Qué es |
 | --- | --- |
+| `perfiles` | El nombre visible de cada uno. Traduce el `created_by` de las demás tablas a «Sergio» o «Alicia». |
 | `pareja_autorizada` | Los correos con acceso. Con RLS activo y sin políticas: ningún cliente puede leerla. |
 | `ideas` | Los planes que añadís desde la app, además del catálogo del código. |
 | `plans` | Los planes que habéis aceptado en la ruleta (pendientes y completados). |
@@ -111,6 +112,8 @@ Reinicia `npm run dev`. Ahora aparecerá la pantalla de login.
    hicimos**: eliges la fecha, escribes la nota y subes las fotos.
 4. **Recuerdos** → el álbum, en vista *Polaroids* o *Cronológico*. Pulsa cualquier foto para
    verla a pantalla completa.
+5. **Historial** → quién eligió cada plan, quién subió cada foto y quién añadió qué, en orden
+   cronológico y con un marcador por persona.
 
 El botón **?** de la cabecera abre la pantalla «¿Cómo funciona?», que explica dentro de la
 propia web el ciclo completo, qué significa cada dato de la tarjeta y cómo ampliar el
@@ -203,6 +206,7 @@ en Supabase después de publicar.
         ├── SavedPlans.jsx      Planes pendientes y completados
         ├── MemoryForm.jsx      Formulario de recuerdo + subida de fotos
         ├── AddPlanForm.jsx     Añadir y borrar planes propios
+        ├── History.jsx         Historial de quién hizo qué
         ├── Gallery.jsx         Muro polaroid / feed cronológico + lightbox
         ├── HowItWorks.jsx      Pantalla «¿Cómo funciona?»
         ├── ConfigMissing.jsx   Aviso si faltan las credenciales

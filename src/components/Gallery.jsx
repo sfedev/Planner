@@ -105,7 +105,7 @@ function Lightbox({ fotos, indice, onClose, onNavegar }) {
 }
 
 // --------------------------------------------------------------------------
-function Polaroid({ memory, index, onAbrir }) {
+function Polaroid({ memory, index, onAbrir, quien }) {
   const fotos = useFotos(memory.photos)
   const cat = CATEGORIES[memory.plan?.category] ?? CATEGORIES.casa
   const giro = [-1.6, 1.2, -0.8, 1.8, -1.2][index % 5]
@@ -145,6 +145,7 @@ function Polaroid({ memory, index, onAbrir }) {
         </p>
         <p className="mt-0.5 text-[11px] text-muted">
           <span style={{ color: cat.color }}>{cat.emoji}</span> {fechaCorta(memory.happened_on)}
+          {quien && ` · ${quien}`}
         </p>
         {memory.note && (
           <p className="mt-2 line-clamp-4 text-[13px] leading-relaxed text-ink/75">
@@ -157,7 +158,7 @@ function Polaroid({ memory, index, onAbrir }) {
 }
 
 // --------------------------------------------------------------------------
-function FeedItem({ memory, onAbrir, onBorrar }) {
+function FeedItem({ memory, onAbrir, onBorrar, quien }) {
   const fotos = useFotos(memory.photos)
   const cat = CATEGORIES[memory.plan?.category] ?? CATEGORIES.casa
   const [confirmando, setConfirmando] = useState(false)
@@ -177,6 +178,7 @@ function FeedItem({ memory, onAbrir, onBorrar }) {
           </h3>
           <p className="mt-0.5 text-xs text-muted">
             {fechaLarga(memory.happened_on)} · {cat.short}
+            {quien && ` · subido por ${quien}`}
           </p>
         </div>
 
@@ -235,7 +237,7 @@ function FeedItem({ memory, onAbrir, onBorrar }) {
 }
 
 // --------------------------------------------------------------------------
-export default function Gallery({ memories, onDeleteMemory, onGoToWheel }) {
+export default function Gallery({ memories, perfiles = {}, onDeleteMemory, onGoToWheel }) {
   const [vista, setVista] = useState('polaroid')
   const [lightbox, setLightbox] = useState(null)
 
@@ -307,7 +309,13 @@ export default function Gallery({ memories, onDeleteMemory, onGoToWheel }) {
       {vista === 'polaroid' ? (
         <div className="mx-auto max-w-4xl columns-2 gap-4 sm:columns-3 lg:columns-4">
           {memories.map((m, i) => (
-            <Polaroid key={m.id} memory={m} index={i} onAbrir={abrir} />
+            <Polaroid
+              key={m.id}
+              memory={m}
+              index={i}
+              onAbrir={abrir}
+              quien={perfiles[m.created_by]}
+            />
           ))}
         </div>
       ) : (
@@ -319,7 +327,13 @@ export default function Gallery({ memories, onDeleteMemory, onGoToWheel }) {
                 {mes}
               </h2>
               {items.map((m) => (
-                <FeedItem key={m.id} memory={m} onAbrir={abrir} onBorrar={onDeleteMemory} />
+                <FeedItem
+                  key={m.id}
+                  memory={m}
+                  onAbrir={abrir}
+                  onBorrar={onDeleteMemory}
+                  quien={perfiles[m.created_by]}
+                />
               ))}
             </section>
           ))}

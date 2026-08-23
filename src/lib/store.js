@@ -30,6 +30,16 @@ function planRowFromIdea(idea) {
 }
 
 // ===========================================================================
+//  PERFILES — para saber quién hizo cada cosa
+// ===========================================================================
+
+export async function listProfiles() {
+  const { data, error } = await supabase.from('perfiles').select('id, nombre')
+  if (error) throw error
+  return Object.fromEntries(data.map((p) => [p.id, p.nombre]))
+}
+
+// ===========================================================================
 //  PLANES
 // ===========================================================================
 
@@ -96,6 +106,8 @@ export function ideaDesdeFila(fila) {
     glutenFree: null,
     propio: true,
     filaId: fila.id,
+    creadoPor: fila.created_by,
+    creadoEn: fila.created_at,
   }
 }
 
